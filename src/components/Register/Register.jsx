@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {createUserWithEmailAndPassword, getAuth, sendEmailVerification} from 'firebase/auth';
+import {createUserWithEmailAndPassword, getAuth, sendEmailVerification, updateProfile} from 'firebase/auth';
 import app from '../../firebase/firebase';
 import { Link } from 'react-router-dom';
 
@@ -18,7 +18,8 @@ const Register = () => {
         setSuccess('')
         const email = event.target.email.value;
         const password = event.target.password.value;
-        console.log(email,password)
+        const name = event.target.name.value;
+        console.log(name,email,password)
         // validate
         if(!/(?=.*[0-9])/.test(password)){
             setError('A number 2 side');
@@ -41,7 +42,8 @@ const Register = () => {
             
             event.target.reset();
             setSuccess('Successfuly');
-            sendVerificationEmail(result.user)
+            sendVerificationEmail(result.user);
+            updateDataNane(result.user,name)
            
         })
         .catch(error =>{
@@ -58,6 +60,17 @@ const Register = () => {
         })
     }
 
+    const updateDataNane=(name,user)=>{
+            updateProfile(user ,{
+                    displayName:name
+            })
+            .then(()=>{
+                console.log('update name')
+            }).catch(error=>{
+                setError(error.message)
+            })
+    }
+
     const handleEmail = (event)=>{
         // console.log(event.target.value);
         // setEmail(event.target.value)
@@ -70,6 +83,7 @@ const Register = () => {
         <div className='w-50 mx-auto'>
             <h2>Please Register</h2>
             <form onSubmit={handleSubmit}>
+                <input className='w-50 mb-4 rounded ps-2' type="text" name="name" id="name" placeholder='Yoour name' required/><br />
                 <input className='w-50 mb-4 rounded ps-2' onChange={handleEmail} type="email" name="email" id="email" placeholder='Yoour Email' required/><br />
                 <input className='w-50 mb-4 rounded ps-2' onBlur={passwordBlur} type="password" name="password" id="password" placeholder='Your Password' required/><br />
                 <input className='btn btn-primary' type="submit" value="Register" />

@@ -1,5 +1,5 @@
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
-import React, { useState } from 'react';
+import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import React, { useRef, useState } from 'react';
 import app from '../../firebase/firebase';
 import { Link } from 'react-router-dom';
 
@@ -8,7 +8,8 @@ const auth = getAuth(app);
 
 const Login = () => {
     const [error,setError] = useState('');
-    const [menu,setMenu] = useState('')
+    const [menu,setMenu] = useState('');
+    const emailRef = useRef();
 
     const handleLogin=event=>{
         event.preventDefault();
@@ -40,14 +41,28 @@ const Login = () => {
         setError(error.message)
     })
     }
+    const handleReaetPassword=()=>{
+        const email=emailRef.current.value;
+        if(!email){
+            alert('plase your email address')
+        }
+        sendPasswordResetEmail(auth,email)
+        .then((email)=>{
+           alert('plase cheak your email')
+        }).catch(error=>{
+            console.log(error);
+            setError(error.message)
+        })
+    }
 
+    
     
     return (
         <div className='w-25 mx-auto'>
             <form onSubmit={handleLogin} className="bg-light p-4 rounded">
                 <h3 className="text-center mb-4">Login</h3>
                 <div className="form-floating mb-3">
-                    <input type="email" className="form-control" name='email' id="email" placeholder="name@example.com" required/>
+                    <input type="email" className="form-control" ref={emailRef} name='email' id="email" placeholder="name@example.com" required/>
                     <label htmlFor="email">Email address</label>
                 </div>
                 <div className="form-floating mb-3">
@@ -58,10 +73,12 @@ const Login = () => {
                     <button type="submit" className="btn btn-primary">Sign In</button>
                 </div>
             </form>
+            <p>Please forget password <button  onClick={handleReaetPassword}>Forget Password</button></p>
             <p>You new wewbsite ? Please Login <Link to="/register">Register</Link></p>
             <p className='text-danger'>{error}</p>
             <p className='text-success'>{menu}</p>
         </div>
+        // email password >12qwertW
     );
 };
 
