@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth';
+import {createUserWithEmailAndPassword, getAuth, sendEmailVerification} from 'firebase/auth';
 import app from '../../firebase/firebase';
+import { Link } from 'react-router-dom';
 
 
 const auth = getAuth(app)
@@ -17,6 +18,7 @@ const Register = () => {
         setSuccess('')
         const email = event.target.email.value;
         const password = event.target.password.value;
+        console.log(email,password)
         // validate
         if(!/(?=.*[0-9])/.test(password)){
             setError('A number 2 side');
@@ -39,11 +41,20 @@ const Register = () => {
             
             event.target.reset();
             setSuccess('Successfuly');
+            sendVerificationEmail(result.user)
            
         })
         .catch(error =>{
             console.log(error.message);
             setError(error.message)
+        })
+    }
+
+    const sendVerificationEmail=(user)=>{
+        sendEmailVerification(user)
+        .then(result=>{
+            console.log(result);
+            alert('Your email virified ')
         })
     }
 
@@ -63,6 +74,7 @@ const Register = () => {
                 <input className='w-50 mb-4 rounded ps-2' onBlur={passwordBlur} type="password" name="password" id="password" placeholder='Your Password' required/><br />
                 <input className='btn btn-primary' type="submit" value="Register" />
             </form>
+            <p>Alredy account have an ? Please Login<Link to="/login">Login</Link></p>
             <p className='text-danger'>{error}</p>
             <p>{success}</p>
         </div>

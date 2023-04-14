@@ -1,4 +1,10 @@
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import React, { useState } from 'react';
+import app from '../../firebase/firebase';
+import { Link } from 'react-router-dom';
+
+
+const auth = getAuth(app);
 
 const Login = () => {
     const [error,setError] = useState('');
@@ -10,6 +16,7 @@ const Login = () => {
         const email = form.email.value;
         const password = form.password.value;
         console.log(email,password)
+        // event.target.reset()
 
         // validation
         setError('');
@@ -19,10 +26,24 @@ const Login = () => {
             setError('Add lest uppercase One chacter');
             return;
         }
+        else if(password.length<6){
+            setError('Pls add 6 chactors long');
+            return;
+        }
+        createUserWithEmailAndPassword(auth,email,password)
+    .then(result =>{
+        const logIn = result.user;
+        console.log(logIn);
+        setMenu('success');
+        event.target.reset()
+    }).catch(error=>{
+        setError(error.message)
+    })
     }
+
+    
     return (
         <div className='w-25 mx-auto'>
-          
             <form onSubmit={handleLogin} className="bg-light p-4 rounded">
                 <h3 className="text-center mb-4">Login</h3>
                 <div className="form-floating mb-3">
@@ -37,7 +58,9 @@ const Login = () => {
                     <button type="submit" className="btn btn-primary">Sign In</button>
                 </div>
             </form>
+            <p>You new wewbsite ? Please Login <Link to="/register">Register</Link></p>
             <p className='text-danger'>{error}</p>
+            <p className='text-success'>{menu}</p>
         </div>
     );
 };
