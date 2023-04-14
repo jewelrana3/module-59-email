@@ -6,28 +6,50 @@ import app from '../../firebase/firebase';
 const auth = getAuth(app)
 
 const Register = () => {
-    const [email,setEmail] = useState('')
+    const [error,setError] = useState('');
+    const [success,setSuccess] = useState('')
 
     const handleSubmit = (event)=>{
         // 1.prevent page refeash
         event.preventDefault();
         // 2.collect from data
+        setError('');
+        setSuccess('')
         const email = event.target.email.value;
         const password = event.target.password.value;
+        // validate
+        if(!/(?=.*[0-9])/.test(password)){
+            setError('A number 2 side');
+            return;
+        }
+        else if(!/([A-Z])/.test(password)){
+            setError('A Letter chacter Uppercase');
+            return;
+        }
+       else if(password.length<6){
+        setError('Number 6 chacter update');
+        return;
+       }
+
         // 3.create in user fb
         createUserWithEmailAndPassword(auth,email,password)
         .then(result =>{
             const logOut = result.user;
-            console.log(logOut)
+            console.log(logOut);
+            
+            event.target.reset();
+            setSuccess('Successfuly');
+           
         })
         .catch(error =>{
-            console.log(error)
+            console.log(error.message);
+            setError(error.message)
         })
     }
 
     const handleEmail = (event)=>{
         // console.log(event.target.value);
-        setEmail(event.target.value)
+        // setEmail(event.target.value)
     }
 
     const passwordBlur=(event)=>{
@@ -37,10 +59,12 @@ const Register = () => {
         <div className='w-50 mx-auto'>
             <h2>Please Register</h2>
             <form onSubmit={handleSubmit}>
-                <input className='w-50 mb-4 rounded ps-2' onChange={handleEmail} type="email" name="email" id="email" placeholder='Yoour Email'/><br />
-                <input className='w-50 mb-4 rounded ps-2' onBlur={passwordBlur} type="password" name="password" id="password" placeholder='Your Password'/><br />
+                <input className='w-50 mb-4 rounded ps-2' onChange={handleEmail} type="email" name="email" id="email" placeholder='Yoour Email' required/><br />
+                <input className='w-50 mb-4 rounded ps-2' onBlur={passwordBlur} type="password" name="password" id="password" placeholder='Your Password' required/><br />
                 <input className='btn btn-primary' type="submit" value="Register" />
             </form>
+            <p className='text-danger'>{error}</p>
+            <p>{success}</p>
         </div>
     );
 };
