@@ -39,7 +39,7 @@ const Register = () => {
         .then(result =>{
             const logOut = result.user;
             console.log(logOut);
-            
+            setError('')
             event.target.reset();
             setSuccess('Successfuly');
             sendVerificationEmail(result.user);
@@ -60,7 +60,7 @@ const Register = () => {
         })
     }
 
-    const updateDataNane=(name,user)=>{
+    const updateDataNane=(user,name)=>{
             updateProfile(user ,{
                     displayName:name
             })
